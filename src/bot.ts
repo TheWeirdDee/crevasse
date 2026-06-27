@@ -70,7 +70,10 @@ function formatVerdict(result: Awaited<ReturnType<typeof runFullCheck>>): string
   // Sell test — headline
   const sellIcon = sellTest.status === 'pass' ? '✅' : sellTest.status === 'fail' ? '🛑' : '⚠️';
   if (sellTest.status === 'pass') {
-    lines.push(`${sellIcon} <b>Sell test</b> — Sellable. We tried to sell, it went through.`);
+    const sellLine = ('simulated' in sellTest && sellTest.simulated)
+      ? 'Sell simulation passed — on-chain devInspect confirmed token is sellable.'
+      : 'Native Sui token — inherently sellable, no simulation required.';
+    lines.push(`${sellIcon} <b>Sell test</b> — ${sellLine}`);
   } else if (sellTest.status === 'fail') {
     lines.push(`${sellIcon} <b>Sell test</b> — HONEYPOT. Sell was blocked by the contract.`);
     if ('error' in sellTest && sellTest.error) {
