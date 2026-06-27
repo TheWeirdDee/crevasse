@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* ── Deep Ice palette (03_FRONTEND_DESIGN_PRD §3) ── */
+  --color-abyss:    #06121F;
+  --color-glacier:  #0E2436;
+  --color-frost:    #9FD8E8;
+  --color-whiteout: #EAF6FA;
+  --color-safe-ice: #5FE3C0;
+  --color-thin-ice: #E8B23F;
+  --color-crevasse: #FF4D5E;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* ── Typography ── */
+  --font-display: var(--font-permanent-marker), 'Permanent Marker', system-ui, sans-serif;
+  --font-sans:    var(--font-geist-sans),    system-ui, sans-serif;
+  --font-mono:    var(--font-geist-mono),    'Courier New', monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #06121F;
+  color: #EAF6FA;
+  font-family: var(--font-sans);
+}
+
+/* Static Noise Background overlay (similar to lofitheyeti.com) */
+.bg-noise {
+  position: relative;
+}
+.bg-noise::before {
+  content: "";
+  position: fixed;
+  /* Make the size slightly larger so translate animations do not expose edges */
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  opacity: 0.26; /* highly visible film grain/static overlay */
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 99; /* overlay on top of all elements so text/graphics look textured */
+  animation: noise-flicker 0.15s steps(4) infinite;
+}
+
+@keyframes noise-flicker {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  20% { transform: translate(-2%, 1%); }
+  30% { transform: translate(1%, -2%); }
+  40% { transform: translate(-1%, 2%); }
+  50% { transform: translate(-2%, 1%); }
+  60% { transform: translate(2%, -1%); }
+  70% { transform: translate(1%, 2%); }
+  80% { transform: translate(-1%, -2%); }
+  90% { transform: translate(2%, 1%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Crevasse Background Image for Landing Page */
+.bg-crevasse-landing {
+  background-image: url('/crevasse_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Frost-pulse — used during the checking state */
+@keyframes frost-pulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.75; }
+}
+
+/* Scan-line — slow top-to-bottom sweep during checking */
+@keyframes scan-down {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(400%); }
 }
