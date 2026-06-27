@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-abyss text-whiteout bg-noise">
+      <body className="min-h-full bg-abyss text-whiteout bg-noise" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

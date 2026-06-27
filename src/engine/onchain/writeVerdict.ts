@@ -15,15 +15,8 @@ const VERDICT_U8: Record<'safe' | 'thin' | 'crevasse', number> = {
 };
 
 /**
- * Sign and submit a verdict to the testnet verdict registry.
- * Returns null (silently) when the required env vars are not configured —
- * the sell-test check continues to work regardless.
- *
- * Required env vars (set after deploying the Move package):
- *   VERDICT_PACKAGE_ID   — package ID from `sui client publish`
- *   VERDICT_REGISTRY_ID  — shared Registry object ID (from publish output)
- *   VERDICT_WRITER_PRIVKEY — bech32 private key of the oracle account (suiprivkey1…), get it with
- *                            `sui keytool export --key-identity <ADDRESS>`
+ * Sign and submit a verdict to the mainnet verdict registry.
+ * Returns null (silently) when the required env vars are not configured.
  */
 export async function writeVerdict(
   coinType: string,
@@ -50,7 +43,7 @@ export async function writeVerdict(
     ],
   });
 
-  const client = getClient(); // same testnet client as the sell-test engine
+  const client = getClient();
   const result = await client.signAndExecuteTransaction({
     signer:      keypair,
     transaction: tx,
@@ -64,6 +57,6 @@ export async function writeVerdict(
 
   return {
     txDigest:    result.digest,
-    explorerUrl: `https://suiscan.xyz/testnet/tx/${result.digest}`,
+    explorerUrl: `https://suiscan.xyz/mainnet/tx/${result.digest}`,
   };
 }

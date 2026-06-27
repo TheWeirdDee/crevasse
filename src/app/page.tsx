@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,6 @@ import Snowfall from '@/components/Snowfall';
 import CrevasseLogo from '@/components/CrevasseLogo';
 import {
   Activity,
-  Key,
   Cpu,
   Snowflake,
   Waves,
@@ -51,7 +50,6 @@ const getStepIcon = (glyph: string) => {
 const getCheckIcon = (iconName: string) => {
   switch (iconName) {
     case 'activity': return <Activity className="w-8 h-8 text-frost" />;
-    case 'key': return <Key className="w-8 h-8 text-frost" />;
     case 'cpu': return <Cpu className="w-8 h-8 text-frost" />;
     case 'snowflake': return <Snowflake className="w-8 h-8 text-frost" />;
     case 'waves': return <Waves className="w-8 h-8 text-frost" />;
@@ -88,17 +86,12 @@ const USAGE_STEPS = [
   },
 ];
 
-/* ── Six Core Safety Checks ──────────────────────────────────────────────── */
+/* ── Five Core Safety Checks ─────────────────────────────────────────────── */
 const SAFETY_CHECKS = [
   {
     icon: 'activity',
     title: 'Live Sell-Test',
-    desc: 'We execute a dry-run sell transaction back to SUI using live network state. By simulating the transaction block programmatically without committing it to the blockchain ledger, the safety engine determines if the token contract contains exit blocks or honeypot logic that would prevent you from selling.',
-  },
-  {
-    icon: 'key',
-    title: 'Upgrade Authority Audit',
-    desc: 'We scan package objects to verify if the creator retains the UpgradeCap. If held in an un-multisigged wallet, the developer can upgrade the bytecode at any time to inject malicious code or halt swaps.',
+    desc: 'We build a real two-step swap on the Cetus pool — buy then sell — and run it via devInspect against the live network. No funds move. If the sell step aborts, the token is a honeypot.',
   },
   {
     icon: 'cpu',
@@ -113,7 +106,7 @@ const SAFETY_CHECKS = [
   {
     icon: 'waves',
     title: 'Liquidity Depth Analysis',
-    desc: 'We analyze locked reserves across Cetus and Aftermath routing paths to guarantee exit swaps without severe slippage.',
+    desc: 'We check the Cetus pool TVL to verify there is enough liquidity to exit. Zero liquidity means no route out, regardless of what the token contract says.',
   },
   {
     icon: 'users',
@@ -287,6 +280,12 @@ export default function Home() {
               >
                 How it Works
               </button>
+              <Link
+                href="/docs"
+                className="hover:text-frost transition-colors"
+              >
+                Docs
+              </Link>
             </div>
 
             <div className="flex items-center gap-4">
@@ -359,7 +358,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
           >
-            Crevasse runs live mainnet transaction dry-runs and liquidity depth checks to audit Sui coin types before you buy. Know if you can exit.
+            Some Sui tokens let you buy but secretly block you from selling. Crevasse tries to sell the token for you — live, on-chain — so you know you can get out before you put money in.
           </motion.p>
 
           {/* Interactive Search Input Box (Crucible Style) */}
@@ -564,7 +563,7 @@ export default function Home() {
                 Sui's object-centric model and Programmable Transaction Blocks (PTB) make transaction composition and verification highly predictable.
               </p>
               <p>
-                Because PTBs can contain multiple operations (like fetching quotes, adding trade paths, and executing the swap) sequentially, Crevasse can compose complex swaps across Aftermath router nodes and verify the complete exit loop atomically.
+                Because PTBs can contain multiple operations sequentially, Crevasse can compose a buy-then-sell sequence against the live Cetus pool and verify the complete exit loop atomically in a single dry-run call.
               </p>
             </div>
           </motion.div>
@@ -592,13 +591,13 @@ export default function Home() {
               CORE SAFETY AUDIT
             </h2>
             <p className="mt-3 max-w-lg mx-auto text-whiteout/60 font-sans text-sm leading-relaxed">
-              We execute six automated safety checks on every token. A single check erroring never kills the pipeline, guaranteeing a fail-safe audit.
+              Five automated safety checks run on every token. A single check failing never kills the pipeline — every result is reported honestly.
             </p>
           </motion.div>
 
-          {/* Grid Layout (Crucible / Pinterest card layout style) */}
+          {/* Five-check grid: wide sell-test card + 4 equal cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Live Sell-Test (Wide, Row 1 Left) */}
+            {/* Card 1: Live Sell-Test (wide) */}
             <motion.div
               className="md:col-span-2 rounded-3xl p-8 border flex flex-col gap-4 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
               style={{
@@ -620,7 +619,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Card 2: Upgrade Authority (Row 1 Right) */}
+            {/* Card 2: Mint Authority */}
             <motion.div
               className="md:col-span-1 rounded-3xl p-8 border flex flex-col gap-4 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
               style={{
@@ -634,7 +633,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
             >
               <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-frost/5 border border-frost/10 text-frost select-none">
-                {getCheckIcon('key')}
+                {getCheckIcon('cpu')}
               </div>
               <div>
                 <h3 className="font-sans text-xl font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[1].title}</h3>
@@ -642,7 +641,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Card 3: Mint Authority Audit (Row 2 Left) */}
+            {/* Card 3: Freeze Status */}
             <motion.div
               className="md:col-span-1 rounded-3xl p-8 border flex flex-col gap-4 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
               style={{
@@ -656,7 +655,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.12, ease: EASE }}
             >
               <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-frost/5 border border-frost/10 text-frost select-none">
-                {getCheckIcon('cpu')}
+                {getCheckIcon('snowflake')}
               </div>
               <div>
                 <h3 className="font-sans text-xl font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[2].title}</h3>
@@ -664,7 +663,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Card 4: Freeze Status Check (Row 2 Center) */}
+            {/* Card 4: Liquidity */}
             <motion.div
               className="md:col-span-1 rounded-3xl p-8 border flex flex-col gap-4 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
               style={{
@@ -678,7 +677,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.16, ease: EASE }}
             >
               <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-frost/5 border border-frost/10 text-frost select-none">
-                {getCheckIcon('snowflake')}
+                {getCheckIcon('waves')}
               </div>
               <div>
                 <h3 className="font-sans text-xl font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[3].title}</h3>
@@ -686,52 +685,27 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Column 3 Stack: Card 5 (Liquidity) & Card 6 (Holders) stacked vertically */}
-            <div className="md:col-span-1 flex flex-col gap-6">
-              {/* Card 5: Liquidity Depth Analysis */}
-              <motion.div
-                className="flex-1 rounded-3xl p-6 border flex flex-col gap-3 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
-                style={{
-                  background: 'rgba(14, 36, 54, 0.85)',
-                  borderColor: 'rgba(159, 216, 232, 0.22)',
-                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.75), 0 0 25px rgba(159, 216, 232, 0.05)',
-                }}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-              >
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-frost/5 border border-frost/10 text-frost select-none">
-                  {getCheckIcon('waves')}
-                </div>
-                <div>
-                  <h3 className="font-sans text-lg font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[4].title}</h3>
-                  <p className="mt-1.5 text-xs text-whiteout/65 leading-relaxed font-sans">{SAFETY_CHECKS[4].desc}</p>
-                </div>
-              </motion.div>
-
-              {/* Card 6: Holder Concentration Check */}
-              <motion.div
-                className="flex-1 rounded-3xl p-6 border flex flex-col gap-3 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
-                style={{
-                  background: 'rgba(14, 36, 54, 0.85)',
-                  borderColor: 'rgba(159, 216, 232, 0.22)',
-                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.75), 0 0 25px rgba(159, 216, 232, 0.05)',
-                }}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.24, ease: EASE }}
-              >
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-frost/5 border border-frost/10 text-frost select-none">
-                  {getCheckIcon('users')}
-                </div>
-                <div>
-                  <h3 className="font-sans text-lg font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[5].title}</h3>
-                  <p className="mt-1.5 text-xs text-whiteout/65 leading-relaxed font-sans">{SAFETY_CHECKS[5].desc}</p>
-                </div>
-              </motion.div>
-            </div>
+            {/* Card 5: Holder Concentration */}
+            <motion.div
+              className="md:col-span-1 rounded-3xl p-8 border flex flex-col gap-4 backdrop-blur-lg hover:-translate-y-1.5 transition-all duration-300 relative group cursor-default"
+              style={{
+                background: 'rgba(14, 36, 54, 0.85)',
+                borderColor: 'rgba(159, 216, 232, 0.22)',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.75), 0 0 25px rgba(159, 216, 232, 0.05)',
+              }}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.20, ease: EASE }}
+            >
+              <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-frost/5 border border-frost/10 text-frost select-none">
+                {getCheckIcon('users')}
+              </div>
+              <div>
+                <h3 className="font-sans text-xl font-bold text-whiteout group-hover:text-frost transition-colors">{SAFETY_CHECKS[4].title}</h3>
+                <p className="mt-2 text-sm text-whiteout/70 leading-relaxed font-sans">{SAFETY_CHECKS[4].desc}</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -871,32 +845,33 @@ export default function Home() {
       {/* ── Wave Divider to Footer ── */}
       <WaveDivider color="#06121F" />
 
-      {/* ── Middle Footer Band: Press Quotes ── */}
+      {/* ── Middle Footer Band: Quick facts ── */}
       <div className="bg-[#06121F] py-16 px-6 md:px-12 text-whiteout font-sans relative z-10" style={{ marginTop: -2 }}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
           <div className="flex flex-col gap-2">
-            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Sui Foundation</h4>
-            <blockquote className="text-sm italic text-whiteout/75 leading-relaxed relative">
-              “ The safety shield Sui needed for mainstream token traders. ”
-            </blockquote>
+            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Live, not guessed</h4>
+            <p className="text-sm text-whiteout/65 leading-relaxed">
+              Every check runs against the live Sui mainnet state. We use devInspect — a built-in Sui dry-run — so no funds ever move.
+            </p>
           </div>
           <div className="flex flex-col gap-2">
-            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Aftermath Finance</h4>
-            <blockquote className="text-sm italic text-whiteout/75 leading-relaxed relative">
-              “ Provides direct validation of complex multi-hop swap execution on-chain. ”
-            </blockquote>
+            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Any Sui token</h4>
+            <p className="text-sm text-whiteout/65 leading-relaxed">
+              Paste any Sui coin type. If it has a Cetus liquidity pool, the full sell-test runs. No fixed allowlist.
+            </p>
           </div>
           <div className="flex flex-col gap-2">
-            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Cetus Protocol</h4>
-            <blockquote className="text-sm italic text-whiteout/75 leading-relaxed relative">
-              “ Secures AMM pools and audits LP distribution variables instantly. ”
-            </blockquote>
+            <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Share any verdict</h4>
+            <p className="text-sm text-whiteout/65 leading-relaxed">
+              One tap posts to X with the verdict, tier colour, and a branded link card. Also available via{' '}
+              <a href="https://t.me/CrevasseBot" target="_blank" rel="noopener noreferrer" className="underline hover:text-frost transition-colors">@CrevasseBot on Telegram</a> — paste any coin type directly in chat.
+            </p>
           </div>
           <div className="flex flex-col gap-2">
             <h4 className="font-display font-semibold text-lg tracking-wider text-frost select-none">Lofi the Yeti</h4>
-            <blockquote className="text-sm italic text-whiteout/75 leading-relaxed relative">
-              “ Sure as heck beats getting frozen out in a cold crevasse. ”
-            </blockquote>
+            <p className="text-sm italic text-whiteout/65 leading-relaxed">
+              &ldquo;Sure as heck beats getting frozen out in a cold crevasse.&rdquo;
+            </p>
           </div>
         </div>
       </div>
@@ -904,71 +879,56 @@ export default function Home() {
       {/* ── Wave Divider to Lower Footer ── */}
       <WaveDivider color="#0E2436" flip />
 
-      {/* ── Bottom Footer Band: Links & Directory ── */}
+      {/* ── Bottom Footer Band: Links & Legal ── */}
       <div className="bg-[#0E2436] py-16 px-6 md:px-12 text-whiteout font-sans relative z-10" style={{ marginTop: -2 }}>
         <div className="max-w-7xl mx-auto flex flex-col gap-12">
-          
-          {/* Main Footer Directory (Columns) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
+
+          {/* Footer columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
             <div className="flex flex-col gap-3">
-              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">About Crevasse</h5>
+              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Crevasse</h5>
               <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">About Us</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">FAQ</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Contact</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Press Kit</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Careers</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Reviews</Link></li>
-              </ul>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Developers</h5>
-              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">API Reference</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Integration Docs</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Sui Move SDK</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">GitHub Repo</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Devnet Faucet</Link></li>
-              </ul>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Legal Stuff</h5>
-              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Website Terms</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Website Privacy</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Terms & Conditions</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Audit Disclaimer</Link></li>
-              </ul>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Sui Ecosystem</h5>
-              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Sui Foundation</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Cetus AMM</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Aftermath Finance</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">SuiScan Explorer</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">DeepBook Orderbook</Link></li>
-              </ul>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Lofi Perks</h5>
-              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Yeti NFTs</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Lofi Sage Profile</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Lofi Legend Perks</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Lofi Grave Vault</Link></li>
-                <li><Link href="/" className="hover:text-frost hover:underline transition-colors">Yeti Token Pool</Link></li>
+                <li><Link href="/check" className="hover:text-frost hover:underline transition-colors">Token Checker</Link></li>
+                <li><Link href="/docs" className="hover:text-frost hover:underline transition-colors">Documentation</Link></li>
               </ul>
             </div>
 
-            {/* Logo Column on Right */}
-            <div className="flex flex-col gap-4 items-start md:items-end justify-start md:text-right col-span-2 sm:col-span-1 md:col-span-1">
+            <div className="flex flex-col gap-3">
+              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Community</h5>
+              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
+                <li>
+                  <a
+                    href="https://t.me/CrevasseBot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-frost hover:underline transition-colors flex items-center gap-1.5"
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
+                    </svg>
+                    Telegram Bot
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <h5 className="font-semibold text-xs tracking-wider uppercase text-frost opacity-90">Sui Ecosystem</h5>
+              <ul className="flex flex-col gap-2 text-xs font-medium text-whiteout/70">
+                <li>
+                  <a href="https://sui.io" target="_blank" rel="noopener noreferrer" className="hover:text-frost hover:underline transition-colors">Sui Foundation</a>
+                </li>
+                <li>
+                  <a href="https://cetus.zone" target="_blank" rel="noopener noreferrer" className="hover:text-frost hover:underline transition-colors">Cetus AMM</a>
+                </li>
+                <li>
+                  <a href="https://suiscan.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-frost hover:underline transition-colors">SuiScan Explorer</a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col gap-3 col-span-2 sm:col-span-1 items-start sm:items-end sm:text-right">
               <div className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-                {/* Hexagon wrapper for rocket logo */}
                 <div className="w-10 h-10 border-2 border-frost rounded-lg rotate-12 flex items-center justify-center bg-transparent">
                   <CrevasseLogo size={24} className="-rotate-12" />
                 </div>
@@ -977,50 +937,18 @@ export default function Home() {
                 </span>
               </div>
               <span className="text-[10px] font-semibold text-whiteout/40 font-mono mt-1">
-                © 2026 Crevasse, Inc.
+                © 2026 Crevasse
               </span>
             </div>
           </div>
 
           <hr className="border-whiteout/10" />
 
-          {/* Categories Links Section */}
-          <div className="flex flex-col gap-2 text-[11px] font-medium leading-relaxed text-whiteout/80">
-            <div className="flex flex-wrap gap-x-2 gap-y-1">
-              <span className="font-bold uppercase tracking-wider text-xs mr-2 text-frost">Categories:</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Swap Safety</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Honeypot Audits</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Liquidity Scans</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Upgradeability Checks</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Freezability Tests</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Holder Distribution</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Move Bytecode Verifier</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Safe Swapping</Link>
-            </div>
-          </div>
-
-          {/* Supported Tokens Section */}
-          <div className="flex flex-col gap-2 text-[11px] font-medium leading-relaxed text-whiteout/80">
-            <div className="flex flex-wrap gap-x-2 gap-y-1">
-              <span className="font-bold uppercase tracking-wider text-xs mr-2 text-frost">Supported Tokens:</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">SUI</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">USDC</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">USDT</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">CETUS</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">AFTY</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">FUD</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">HIPPO</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Yeti Coins</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">DeepBook L2</Link> <span className="opacity-30">•</span>
-              <Link href="/" className="hover:text-frost hover:underline transition-colors">Liquid Staking Tokens</Link>
-            </div>
-          </div>
-
-          {/* Legal Bank Disclaimer (Bottom) */}
+          {/* Legal disclaimer */}
           <div className="text-[10px] text-whiteout/40 leading-relaxed font-mono">
-            The Crevasse Safety Ledger is verified on Sui Mainnet. Verdicts are signed by decentralized oracle nodes. 
-            All audits represent automated on-chain simulation runs and do not constitute financial advice or endorsements. 
-            Use Crevasse as a safety guideline, but always perform your own due diligence.
+            Verdicts are produced by live on-chain simulation (Sui devInspect) and recorded on Sui mainnet.
+            All checks are automated and do not constitute financial advice or endorsements.
+            Use Crevasse as a safety guide — always do your own research before investing.
           </div>
         </div>
       </div>

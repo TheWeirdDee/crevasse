@@ -31,6 +31,19 @@ interface CheckResult {
   onChain:  { txDigest: string; explorerUrl: string } | null;
 }
 
+/* ── X share URL builder ────────────────────────────────────────────────────── */
+const X_TEXT: Record<'safe' | 'thin' | 'crevasse', string> = {
+  safe:     '✅ CREVASSE checked this Sui token — SAFE ICE. Live on-chain sell-test passed.',
+  thin:     '⚠️ CREVASSE: THIN ICE on this Sui token. Sell simulation inconclusive — no confirmed exit.',
+  crevasse: '🛑 CREVASSE flagged this Sui token as a HONEYPOT — buy but can\'t sell. Checked live on-chain.',
+};
+
+function xShareUrl(verdict: 'safe' | 'thin' | 'crevasse', token: string, score: number): string {
+  const base = typeof window !== 'undefined' ? window.location.origin : 'https://crevasse.vercel.app';
+  const shareUrl = `${base}/share?verdict=${verdict}&token=${encodeURIComponent(token)}&score=${score}`;
+  return `https://x.com/intent/tweet?text=${encodeURIComponent(X_TEXT[verdict] + '\n')}&url=${encodeURIComponent(shareUrl)}`;
+}
+
 /* ── Check-item row ─────────────────────────────────────────────────────────── */
 function CheckRow({
   icon, label, status, delay = 0,
@@ -186,6 +199,35 @@ function CheckContent() {
         </div>
 
         {/* Wallet connect */}
+        {/* Telegram link */}
+        <a
+          href="https://t.me/CrevasseBot"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open Crevasse on Telegram"
+          className="hidden sm:flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs transition-all duration-300"
+          style={{
+            borderColor: 'rgba(159,216,232,0.15)',
+            color: 'rgba(159,216,232,0.50)',
+            background: 'transparent',
+          }}
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLAnchorElement;
+            el.style.borderColor = 'rgba(159,216,232,0.40)';
+            el.style.color = 'rgba(159,216,232,0.90)';
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLAnchorElement;
+            el.style.borderColor = 'rgba(159,216,232,0.15)';
+            el.style.color = 'rgba(159,216,232,0.50)';
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
+          </svg>
+          <span className="tracking-wider uppercase font-medium" style={{ fontSize: '0.65rem' }}>Telegram</span>
+        </a>
+
         {walletAddress ? (
           <button
             onClick={() => disconnect()}
@@ -416,6 +458,46 @@ function CheckContent() {
                 delay={0.27}
               />
  
+              {/* X share button */}
+              {(result.verdict === 'safe' || result.verdict === 'thin' || result.verdict === 'crevasse') && (
+                <motion.div
+                  className="mt-5"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                >
+                  <a
+                    href={xShareUrl(result.verdict, result.token, result.score)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs tracking-wider uppercase font-semibold transition-all duration-300"
+                    style={{
+                      borderColor: 'rgba(159,216,232,0.18)',
+                      color:       'rgba(159,216,232,0.55)',
+                      background:  'transparent',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLAnchorElement;
+                      el.style.borderColor = 'rgba(159,216,232,0.40)';
+                      el.style.color       = 'rgba(159,216,232,0.90)';
+                      el.style.background  = 'rgba(159,216,232,0.05)';
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLAnchorElement;
+                      el.style.borderColor = 'rgba(159,216,232,0.18)';
+                      el.style.color       = 'rgba(159,216,232,0.55)';
+                      el.style.background  = 'transparent';
+                    }}
+                  >
+                    {/* X logo */}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                    Share on X
+                  </a>
+                </motion.div>
+              )}
+
               {/* On-chain record */}
               <motion.div
                 className="mt-4 text-xs flex items-center gap-2"
@@ -439,7 +521,7 @@ function CheckContent() {
                   </a>
                 ) : (
                   <span style={{ color: 'rgba(159,216,232,0.22)' }}>
-                    ⛓ On-chain recording active after mainnet deploy
+                    ⛓ On-chain recording unavailable
                   </span>
                 )}
               </motion.div>
@@ -599,6 +681,7 @@ function CheckContent() {
                     >
                       <span>{w.name}</span>
                       {w.icon ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={w.icon} alt={w.name} className="w-5 h-5 object-contain" />
                       ) : (
                         <Wallet className="w-5 h-5 text-frost" />

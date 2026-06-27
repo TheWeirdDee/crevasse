@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 
 export type YetiMood = 'safe' | 'thin' | 'crevasse';
@@ -40,9 +41,11 @@ export default function YetiAvatar({ mood, delay = 0 }: { mood: YetiMood; delay?
         }}
         className="w-24 h-24 rounded-full border border-white/10 overflow-hidden bg-abyss"
       >
-        <img
+        <Image
           src={`/yeti_${mood === 'safe' ? 'sage' : mood === 'thin' ? 'legend' : 'grave'}.png`}
           alt={`${mood === 'safe' ? 'Sage' : mood === 'thin' ? 'Legend' : 'Grave'} Yeti`}
+          width={96}
+          height={96}
           className="w-full h-full object-cover select-none"
         />
       </motion.div>
