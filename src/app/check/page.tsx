@@ -249,7 +249,7 @@ function CheckContent() {
               el.style.borderColor = 'rgba(95,227,192,0.30)';
               el.style.color = '#5FE3C0';
               el.style.background = 'rgba(95,227,192,0.03)';
-              el.textContent = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+              if (walletAddress) el.textContent = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             }}
           >
             {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
