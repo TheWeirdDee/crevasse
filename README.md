@@ -4,6 +4,8 @@
 **Telegram:** https://t.me/CrevasseBot  
 **Mainnet Package:** `0x963c82cfeaae883221c3c9651cbdb3280df084ad4948823a681f14b62cb1ec68`
 
+![CREVASSE honeypot verdict](public/screenshot-honeypot.png)
+
 ---
 
 ## What it is
