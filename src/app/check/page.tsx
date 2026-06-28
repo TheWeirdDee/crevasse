@@ -285,7 +285,7 @@ function CheckContent() {
  
       <main className="flex-1 flex flex-col items-center gap-8 px-4 sm:px-6 pt-24 pb-10 w-full max-w-2xl mx-auto">
  
-        {/* Yeti Verified Badge */}
+        {/* Wallet connected indicator */}
         <AnimatePresence>
           {walletAddress && (
             <motion.div
@@ -294,14 +294,13 @@ function CheckContent() {
                 background: 'rgba(95,227,192,0.06)',
                 borderColor: 'rgba(95,227,192,0.22)',
                 color: '#5FE3C0',
-                textShadow: '0 0 12px rgba(95,227,192,0.25)',
               }}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
             >
               <ShieldCheck className="w-3.5 h-3.5 text-safe-ice" />
-              <span>Yeti Verified Member (NFT Perks Active)</span>
+              <span>Wallet connected</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -588,13 +587,13 @@ function CheckContent() {
             >
               <h3 className="text-xs font-semibold uppercase tracking-wider text-frost/50 flex items-center gap-1.5">
                 <Bookmark className="w-3.5 h-3.5 text-frost" />
-                <span>Yeti Watchlist</span>
+                <span>Quick access</span>
               </h3>
               <div className="flex flex-col gap-2">
                 {[
-                  { name: 'SUI (Safe)', type: '0x2::sui::SUI' },
-                  { name: 'USDC (Safe)', type: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC' },
-                  { name: 'HPOT (Honeypot)', type: `${process.env.NEXT_PUBLIC_HONEYPOT_PACKAGE_ID ?? '0x86d2cfbc27f610d1a2dc9517476dbc480eb0a0540237e21b4dd8db6b1a782947'}::honeypot_coin::HONEYPOT_COIN` }
+                  { name: 'SUI', type: '0x2::sui::SUI' },
+                  { name: 'USDC', type: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC' },
+                  { name: 'Honeypot fixture', type: `${process.env.NEXT_PUBLIC_HONEYPOT_PACKAGE_ID ?? '0x86d2cfbc27f610d1a2dc9517476dbc480eb0a0540237e21b4dd8db6b1a782947'}::honeypot_coin::HONEYPOT_COIN` }
                 ].map(item => (
                   <div key={item.name} className="flex justify-between items-center text-xs py-1.5 border-b border-whiteout/5 last:border-0">
                     <div className="flex flex-col">
@@ -647,7 +646,7 @@ function CheckContent() {
                 </button>
               </div>
               <p className="text-xs text-left leading-relaxed" style={{ color: 'rgba(159,216,232,0.52)' }}>
-                Connect a Sui wallet to unlock watchlists and Lofi NFT holder perks.
+                Connect a Sui wallet to enable quick-access shortcuts for token checks.
               </p>
               
               <div className="flex flex-col gap-2">

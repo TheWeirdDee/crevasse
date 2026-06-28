@@ -66,7 +66,7 @@ export async function freezeAuthority(coinType: string): Promise<FreezeAuthority
     if (!txDigest) {
       return {
         status: 'warn',
-        explanation: 'Could not determine freeze capability history.',
+        explanation: 'Freeze capability history unavailable — coin metadata not indexed on-chain.',
         weight: 20,
       };
     }
@@ -80,7 +80,7 @@ export async function freezeAuthority(coinType: string): Promise<FreezeAuthority
     if (!changes) {
       return {
         status: 'warn',
-        explanation: 'Could not inspect freeze capability initialization.',
+        explanation: 'Freeze capability status unknown — object changes not available for this tx.',
         weight: 20,
       };
     }
@@ -145,7 +145,7 @@ export async function freezeAuthority(coinType: string): Promise<FreezeAuthority
     console.error('[freezeAuthority] check failed:', err);
     return {
       status: 'unavailable',
-      explanation: 'Freeze authority status unavailable.',
+      explanation: 'Freeze authority check failed — RPC error reading coin objects.',
       weight: 20,
     };
   }

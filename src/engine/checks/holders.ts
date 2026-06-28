@@ -125,7 +125,7 @@ export async function holders(coinType: string): Promise<HoldersResult> {
 
     const txDigest = pkgResult.data?.previousTransaction;
     if (!txDigest) {
-      return { status: 'unavailable', explanation: 'Holder distribution data unavailable.', weight: 20 };
+      return { status: 'unavailable', explanation: 'Holder data unavailable — package creation tx not found.', weight: 20 };
     }
 
     const txResult = await client.getTransactionBlock({
@@ -135,7 +135,7 @@ export async function holders(coinType: string): Promise<HoldersResult> {
 
     const creatorAddress = txResult.transaction?.data.sender;
     if (!creatorAddress) {
-      return { status: 'unavailable', explanation: 'Holder distribution data unavailable.', weight: 20 };
+      return { status: 'unavailable', explanation: 'Holder data unavailable — creator address could not be traced.', weight: 20 };
     }
 
     const [supplyRes, balanceRes] = await Promise.all([
@@ -169,6 +169,6 @@ export async function holders(coinType: string): Promise<HoldersResult> {
     };
   } catch (err) {
     console.error('[holders] creator check failed:', err);
-    return { status: 'unavailable', explanation: 'Holder distribution data unavailable.', weight: 20 };
+    return { status: 'unavailable', explanation: 'Holder data unavailable — RPC error reading balances.', weight: 20 };
   }
 }

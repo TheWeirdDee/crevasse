@@ -66,7 +66,7 @@ export async function mintAuthority(coinType: string): Promise<MintAuthorityResu
     if (!txDigest) {
       return {
         status: 'warn',
-        explanation: 'Could not determine mint capability history.',
+        explanation: 'Mint capability history unavailable — coin metadata not indexed on-chain.',
         weight: 20,
       };
     }
@@ -80,7 +80,7 @@ export async function mintAuthority(coinType: string): Promise<MintAuthorityResu
     if (!changes) {
       return {
         status: 'warn',
-        explanation: 'Could not inspect mint capability initialization.',
+        explanation: 'Mint capability status unknown — object changes not available for this tx.',
         weight: 20,
       };
     }
@@ -145,7 +145,7 @@ export async function mintAuthority(coinType: string): Promise<MintAuthorityResu
     console.error('[mintAuthority] check failed:', err);
     return {
       status: 'unavailable',
-      explanation: 'Mint authority status unavailable.',
+      explanation: 'Mint authority check failed — RPC error reading coin objects.',
       weight: 20,
     };
   }
